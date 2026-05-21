@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MovieMixer IA 🎬</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎬 Movie<span class="highlight">Mixer</span></h1>
+            <p>Misture dois filmes e descubra novas recomendações!</p>
+        </header>
+
+        <div class="input-section">
+            <div class="input-group">
+                <label>Filme da Pessoa A</label>
+                <input type="text" id="filmeA" placeholder="Ex: Interstellar">
+            </div>
+            <div class="mixer-icon">+</div>
+            <div class="input-group">
+                <label>Filme da Pessoa B</label>
+                <input type="text" id="filmeB" placeholder="Ex: O Grande Hotel Budapeste">
+            </div>
+        </div>
+
+        <button id="btnMix">Misturar Mundos! ✨</button>
+
+        <div id="loading" class="hidden">📽️ Analisando frames e roteiros...</div>
+        <div id="result-list" class="result-grid"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
