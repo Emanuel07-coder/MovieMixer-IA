@@ -12,14 +12,28 @@ app = Flask(__name__)
 CORS(app)
 
 # Inicializa o cliente Groq
-# Usamos get() para evitar que o app quebre se a chave não existir
 api_key = os.environ.get("GROQ_API_KEY")
 if not api_key:
     print("❌ ERRO: GROQ_API_KEY não encontrada no arquivo .env")
 
 client = Groq(api_key=api_key)
 
-@app.route('/recommend', methods=['POST'])
+# -------------------------------------------------------------------
+# ROTA DE TESTE (PING)
+# Serve para testar se a API está online via navegador
+# Acesse: https://seu-projeto.vercel.app/api/ping
+# -------------------------------------------------------------------
+@app.route('/api/ping', methods=['GET'])
+def ping():
+    return jsonify({"status": "online", "message": "API MovieMixer está respondendo!"}), 200
+
+# -------------------------------------------------------------------
+# ROTA DE RECOMENDAÇÃO
+# Note que adicionamos '/api' no início e criamos duas versões 
+# (com e sem barra final) para evitar o erro 405 da Vercel.
+# -------------------------------------------------------------------
+@app.route('/api/recommend', methods=['POST'])
+@app.route('/api/recommend/', methods=['POST'])
 def recommend():
     try:
         # 1. Validação de Input
@@ -33,7 +47,7 @@ def recommend():
         if not filme_a or not filme_b:
             return jsonify({"error": "Por favor, forneça os dois filmes (filmeA e filmeB)"}), 400
 
-        # 2. Prompt Especializado (Refinado para evitar lixo no JSON)
+        # 2. Prompt Especializado
         system_prompt = (
             "Você é um curador de cinema especialista em análise temática e estética. "
             "Seu objetivo é criar a 'Mistura Perfeita' entre dois filmes. "
@@ -59,8 +73,7 @@ def recommend():
         # 4. Processamento da Resposta
         content = chat_completion.choices[0].message.content
         
-        # Tentamos converter a string da IA em um dicionário Python real
-        # Isso garante que o Flask envie um JSON válido e não apenas uma string
+        # Converte a string da IA em JSON real
         parsed_json = json.loads(content)
 
         return jsonify(parsed_json), 200
@@ -68,9 +81,7 @@ def recommend():
     except json.JSONDecodeError:
         return jsonify({"error": "A IA gerou um formato de resposta inválido. Tente novamente."}), 500
     except Exception as e:
-        # Log do erro no console para o desenvolvedor
         print(f"Erro interno: {str(e)}")
-        # Resposta genérica para o usuário por segurança
         return jsonify({"error": "Ocorreu um erro interno ao processar a recomendação."}), 500
 
 # Para rodar localmente
